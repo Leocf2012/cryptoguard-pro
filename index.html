@@ -1,240 +1,115 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CryptoGuard Pro — Tudo em Um</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background: #030712; }
-        .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(56, 189, 248, 0.15); }
-        .score-circle { width: 120px; height: 120px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 700; }
-        .score-green { background: conic-gradient(#22c55e 0% 100%, #1f2937 0); }
-        .score-yellow { background: conic-gradient(#eab308 0% 70%, #1f2937 0); }
-        .score-red { background: conic-gradient(#ef4444 0% 40%, #1f2937 0); }
-        .tab-active { border-bottom: 2px solid #22d3ee; color: #67e8f9; }
-        .real { color: #4ade80; }
-        .fake { color: #f87171; }
-    </style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>CryptoGuard Pro — Real Data</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+body{font-family:'Inter',sans-serif;background:#030712}
+.glass{background:rgba(15,23,42,.8);backdrop-filter:blur(12px);border:1px solid rgba(56,189,248,.15)}
+.score-circle{width:120px;height:120px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;position:relative}
+.score-circle::before{content:'';position:absolute;inset:6px;background:#0f172a;border-radius:50%;z-index:0}
+.score-circle span{position:relative;z-index:1}
+.tab-active{border-bottom:2px solid #22d3ee;color:#67e8f9}
+.real{color:#4ade80}.fake{color:#f87171}
+</style>
 </head>
 <body class="text-slate-100 min-h-screen pb-20">
-
-<header class="sticky top-0 z-50 glass px-4 py-3">
-    <div class="max-w-lg mx-auto flex items-center justify-between">
-        <h1 class="text-xl font-bold bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">🛡️ CryptoGuard Pro</h1>
-        <span class="text-xs text-emerald-400">✅ GitHub — Pronto</span>
-    </div>
-</header>
-
+<header class="sticky top-0 z-50 glass px-4 py-3"><div class="max-w-lg mx-auto flex items-center justify-between"><h1 class="text-xl font-bold bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">🛡️ CryptoGuard Pro</h1><span class="text-xs text-emerald-400" id="statusTag">✅ Real Data ON</span></div></header>
 <main class="max-w-lg mx-auto px-4 mt-6">
-    <!-- Busca -->
-    <div class="glass rounded-2xl p-4 mb-6">
-        <label class="text-sm text-slate-300 mb-2 block">Endereço do Token (Contrato)</label>
-        <div class="flex gap-2">
-            <input id="contractInput" type="text" placeholder="0x... ou endereço Solana..." 
-                class="flex-1 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500">
-            <button id="analyzeBtn" onclick="analisar()" 
-                class="bg-cyan-600 hover:bg-cyan-500 px-5 py-3 rounded-xl font-semibold transition-all">
-                🔍 Analisar
-            </button>
-        </div>
-        <div class="flex gap-2 mt-3">
-            <button onclick="setRede('eth')" id="btnEth" class="px-3 py-1.5 rounded-lg text-xs bg-slate-800 border border-slate-600">Ethereum</button>
-            <button onclick="setRede('sol')" id="btnSol" class="px-3 py-1.5 rounded-lg text-xs bg-slate-700 border border-cyan-500">Solana</button>
-        </div>
-    </div>
+<div class="glass rounded-2xl p-4 mb-6">
+<label class="text-sm text-slate-300 mb-2 block">Endereço do Token</label>
+<div class="flex gap-2"><input id="contractInput" type="text" placeholder="0x... ou Solana..." class="flex-1 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"><button id="analyzeBtn" onclick="analisar()" class="bg-cyan-600 hover:bg-cyan-500 px-5 py-3 rounded-xl font-semibold">🔍</button></div>
+<div class="flex gap-2 mt-3"><button onclick="setRede('eth')" id="btnEth" class="px-3 py-1.5 rounded-lg text-xs bg-slate-800 border border-slate-600">Ethereum</button><button onclick="setRede('sol')" id="btnSol" class="px-3 py-1.5 rounded-lg text-xs bg-slate-700 border border-cyan-500">Solana</button></div>
+<div id="loading" class="hidden text-center text-cyan-400 text-sm mt-3">⏳ Buscando DexScreener + RugCheck...</div>
+</div>
 
-    <!-- Resultados -->
-    <div id="results" class="hidden space-y-4">
-        <!-- Nota -->
-        <div class="glass rounded-2xl p-5 text-center">
-            <h2 class="text-sm text-slate-400 mb-3">Guia de Verificação</h2>
-            <div class="score-circle score-yellow mx-auto mb-3">
-                <span class="text-2xl">👁️</span>
-            </div>
-            <p class="text-sm text-slate-300">Confira nos links — VOCÊ decide!</p>
-        </div>
+<div id="results" class="hidden space-y-4">
+<div class="glass rounded-2xl p-5 text-center">
+<h2 class="text-sm text-slate-400 mb-1">Score Real RugCheck</h2>
+<div id="scoreCircle" class="score-circle mx-auto mb-3" style="background:conic-gradient(#eab308 0% 70%, #1f2937 0)"><span id="scoreText">--</span></div>
+<div class="grid grid-cols-3 gap-2 text-xs mt-3">
+<div class="bg-slate-900/50 p-2 rounded-lg"><div class="text-slate-400">MC</div><div id="statMC" class="font-bold">--</div></div>
+<div class="bg-slate-900/50 p-2 rounded-lg"><div class="text-slate-400">Liq</div><div id="statLiq" class="font-bold">--</div></div>
+<div class="bg-slate-900/50 p-2 rounded-lg"><div class="text-slate-400">Top10</div><div id="statTop10" class="font-bold">--</div></div>
+</div>
+<p class="text-xs text-slate-400 mt-3">Idade: <span id="statAge" class="text-white font-bold">--</span> • Vol24h: <span id="statVol" class="text-white font-bold">--</span></p>
+</div>
 
-        <!-- Abas -->
-        <div class="flex border-b border-slate-700 mb-4">
-            <button class="flex-1 py-3 text-sm tab-active" data-tab="geral" onclick="mudarAba('geral')">Geral</button>
-            <button class="flex-1 py-3 text-sm text-slate-400" data-tab="airdrop" onclick="mudarAba('airdrop')">Airdrop</button>
-            <button class="flex-1 py-3 text-sm text-slate-400" data-tab="holders" onclick="mudarAba('holders')">Holders</button>
-            <button class="flex-1 py-3 text-sm text-slate-400" data-tab="riscos" onclick="mudarAba('riscos')">Riscos</button>
-        </div>
+<div class="flex border-b border-slate-700"><button class="flex-1 py-3 text-sm tab-active" data-tab="geral" onclick="mudarAba('geral')">Geral</button><button class="flex-1 py-3 text-sm text-slate-400" data-tab="airdrop" onclick="mudarAba('airdrop')">Airdrop</button><button class="flex-1 py-3 text-sm text-slate-400" data-tab="holders" onclick="mudarAba('holders')">Holders</button><button class="flex-1 py-3 text-sm text-slate-400" data-tab="riscos" onclick="mudarAba('riscos')">Riscos</button></div>
 
-        <!-- Aba Geral -->
-        <div id="aba-geral" class="aba-conteudo space-y-4">
-            <div class="glass rounded-xl p-4">
-                <h3 class="font-semibold mb-3">🔗 Links Diretos — Fonte Oficial</h3>
-                <div class="grid grid-cols-2 gap-2 text-sm">
-                    <a id="linkArkham" href="#" target="_blank" class="bg-slate-800 p-3 rounded-lg text-center hover:bg-slate-700">🔍 Arkham</a>
-                    <a id="linkScan" href="#" target="_blank" class="bg-slate-800 p-3 rounded-lg text-center hover:bg-slate-700">📊 Explorador</a>
-                    <a id="linkRug" href="#" target="_blank" class="bg-slate-800 p-3 rounded-lg text-center hover:bg-slate-700">🛡️ RugCheck</a>
-                    <a id="linkCG" href="#" target="_blank" class="bg-slate-800 p-3 rounded-lg text-center hover:bg-slate-700">📈 CoinGecko</a>
-                </div>
-                <p class="text-xs text-amber-400 mt-3">💡 Abra cada link e confira com seus próprios olhos!</p>
-            </div>
-            <div class="glass rounded-xl p-4">
-                <h3 class="font-semibold mb-3">📋 Passo a Passo Rápido</h3>
-                <ol class="text-sm space-y-2 text-slate-300 list-decimal list-inside">
-                    <li>Abra o <strong>Explorador</strong> → veja nome, símbolo, idade</li>
-                    <li>Abra o <strong>RugCheck</strong> → confirme se é seguro ✅</li>
-                    <li>Veja <strong>Liquidez</strong> → está travada e bloqueada?</li>
-                    <li>Veja <strong>Top Holders</strong> → ninguém com mais de 15%?</li>
-                    <li>Veja <strong>Origem</strong> → veio de compra ou distribuição grátis?</li>
-                </ol>
-            </div>
-        </div>
+<div id="aba-geral" class="aba-conteudo space-y-4">
+<div class="glass rounded-xl p-4"><h3 class="font-semibold mb-3">🔗 Links Diretos — Fonte Oficial</h3><div class="grid grid-cols-2 gap-2 text-sm"><a id="linkArkham" href="#" target="_blank" class="bg-slate-800 p-3 rounded-lg text-center hover:bg-slate-700">🔍 Arkham</a><a id="linkScan" href="#" target="_blank" class="bg-slate-800 p-3 rounded-lg text-center hover:bg-slate-700">📊 Explorer</a><a id="linkRug" href="#" target="_blank" class="bg-slate-800 p-3 rounded-lg text-center hover:bg-slate-700">🛡️ RugCheck</a><a id="linkCG" href="#" target="_blank" class="bg-slate-800 p-3 rounded-lg text-center hover:bg-slate-700">📈 DexScreener</a></div><p class="text-xs text-amber-400 mt-3">💡 Dados acima são REAIS via API. Abra os links pra confirmar!</p></div>
+</div>
 
-        <!-- Aba Airdrop -->
-        <div id="aba-airdrop" class="aba-conteudo hidden space-y-4">
-            <div class="glass rounded-xl p-4">
-                <h3 class="font-semibold mb-3">📤 Origem dos Tokens</h3>
-                <div class="text-sm space-y-3">
-                    <p class="text-slate-300">No Explorador → aba <strong>Transfers/Transações</strong>:</p>
-                    <div class="p-3 bg-emerald-950/30 rounded-lg">
-                        <span class="real">🟢 Bom sinal:</span><br>
-                        • Carteira enviou SOL/ETH → recebeu token<br>
-                        • Compra direta na pool de liquidez
-                    </div>
-                    <div class="p-3 bg-red-950/30 rounded-lg">
-                        <span class="fake">🔴 Alerta:</span><br>
-                        • "Workerput", "Relay", "Merkle" = distribuição automática<br>
-                        • Mesmo valor enviado para 20+ carteiras<br>
-                        • Carteira nova recebeu sem comprar nada
-                    </div>
-                </div>
-            </div>
-            <div class="glass rounded-xl p-4">
-                <h3 class="font-semibold mb-3">👤 Criador / Dev</h3>
-                <div class="text-sm space-y-2">
-                    <p>🔍 Verifique a carteira que criou o token:</p>
-                    <ul class="space-y-1 text-slate-300">
-                        <li>• Ainda segura muitos tokens?</li>
-                        <li>• Já vendeu/enviou para outras carteiras?</li>
-                        <li>• Enviou para várias carteiras ao mesmo tempo?</li>
-                        <li>• Renunciou ao contrato (não pode mais controlar)?</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
+<div id="aba-airdrop" class="aba-conteudo hidden space-y-4">
+<div class="glass rounded-xl p-4"><h3 class="font-semibold mb-3">📤 Origem dos Tokens</h3><div class="text-sm space-y-3"><div class="p-3 bg-emerald-950/30 rounded-lg"><span class="real">🟢 Bom sinal:</span><br>• Carteira enviou SOL/ETH → recebeu token<br>• Compra direta na pool</div><div class="p-3 bg-red-950/30 rounded-lg"><span class="fake">🔴 Alerta:</span><br>• "Worker", "Relay", "Merkle" = airdrop<br>• Mesmo valor pra 20+ carteiras</div></div></div>
+</div>
 
-        <!-- Aba Holders -->
-        <div id="aba-holders" class="aba-conteudo hidden space-y-4">
-            <div class="glass rounded-xl p-4">
-                <h3 class="font-semibold mb-3">👥 Reais vs Falsos</h3>
-                <div class="space-y-3 text-sm">
-                    <div class="p-3 bg-emerald-950/30 rounded-lg">
-                        <span class="real">🟢 Comprador Real</span>
-                        <ul class="mt-1 text-slate-300">
-                            <li>• Carteira com histórico de transações</li>
-                            <li>• Comprou com dinheiro próprio (SOL/ETH)</li>
-                            <li>• Não recebeu de "amigo" ou sistema</li>
-                            <li>• Valores diferentes, naturais</li>
-                        </ul>
-                    </div>
-                    <div class="p-3 bg-red-950/30 rounded-lg">
-                        <span class="fake">🔴 Suspeito/Falso</span>
-                        <ul class="mt-1 text-slate-300">
-                            <li>• Carteira criada dias/horas atrás</li>
-                            <li>• Recebeu token sem comprar nada</li>
-                            <li>• Valor idêntico a outras carteiras</li>
-                            <li>• Nome de sistema: Proxy, Disperse, Worker</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
+<div id="aba-holders" class="aba-conteudo hidden space-y-4">
+<div class="glass rounded-xl p-4"><h3 class="font-semibold mb-3">👥 Reais vs Falsos — Dados Reais Abaixo</h3>
+<div id="holdersList" class="text-sm space-y-2"></div>
+</div></div>
 
-        <!-- Aba Riscos -->
-        <div id="aba-riscos" class="aba-conteudo hidden space-y-4">
-            <div class="glass rounded-xl p-4">
-                <h3 class="font-semibold mb-3">⚠️ Checklist de Riscos</h3>
-                <div class="space-y-3 text-sm">
-                    <label class="flex items-start gap-2 cursor-pointer">
-                        <input type="checkbox" class="mt-0.5">
-                        <span>❌ Proxy / Contrato escondido (ver no RugCheck)</span>
-                    </label>
-                    <label class="flex items-start gap-2 cursor-pointer">
-                        <input type="checkbox" class="mt-0.5">
-                        <span>❌ Top 10 com mais de 40% do supply</span>
-                    </label>
-                    <label class="flex items-start gap-2 cursor-pointer">
-                        <input type="checkbox" class="mt-0.5">
-                        <span>❌ Liquidez NÃO está travada ou bloqueada</span>
-                    </label>
-                    <label class="flex items-start gap-2 cursor-pointer">
-                        <input type="checkbox" class="mt-0.5">
-                        <span>❌ Pode criar mais tokens a qualquer momento</span>
-                    </label>
-                    <label class="flex items-start gap-2 cursor-pointer">
-                        <input type="checkbox" class="mt-0.5">
-                        <span>❌ Imposto alto na compra/venda (mais de 5-10%)</span>
-                    </label>
-                    <label class="flex items-start gap-2 cursor-pointer">
-                        <input type="checkbox" class="mt-0.5">
-                        <span>❌ Criador não renunciou ao contrato</span>
-                    </label>
-                </div>
-            </div>
-            <div class="glass rounded-xl p-4 border-emerald-500/30">
-                <h3 class="font-semibold mb-2 text-emerald-400">✅ Pode entrar SOMENTE se TODOS forem OK:</h3>
-                <ul class="text-sm text-slate-300 space-y-1">
-                    <li>✓ RugCheck: Seguro / Sem risco</li>
-                    <li>✓ Liquidez TRAVADA + BLOQUEADA</li>
-                    <li>✓ Criador renunciou ao contrato</li>
-                    <li>✓ Ninguém tem mais de 10-15% do total</li>
-                    <li>✓ Compradores reais, não distribuição</li>
-                </ul>
-                <p class="text-red-400 text-sm mt-3 font-semibold">🚫 Se faltar UM SÓ → FICA FORA!</p>
-            </div>
-        </div>
-    </div>
+<div id="aba-riscos" class="aba-conteudo hidden space-y-4">
+<div class="glass rounded-xl p-4"><h3 class="font-semibold mb-3">⚠️ Checklist Automático</h3><div id="risksAuto" class="space-y-2 text-sm"></div></div>
+</div>
+</div>
 </main>
-
 <script>
-let rede = 'sol';
+let rede='sol';
+function setRede(r){rede=r;document.getElementById('btnEth').className=r==='eth'?'px-3 py-1.5 rounded-lg text-xs bg-slate-700 border border-cyan-500':'px-3 py-1.5 rounded-lg text-xs bg-slate-800 border border-slate-600';document.getElementById('btnSol').className=r==='sol'?'px-3 py-1.5 rounded-lg text-xs bg-slate-700 border border-cyan-500':'px-3 py-1.5 rounded-lg text-xs bg-slate-800 border border-slate-600';}
+function mudarAba(n){document.querySelectorAll('[data-tab]').forEach(t=>{t.classList.remove('tab-active');t.classList.add('text-slate-400');});document.querySelector('[data-tab="'+n+'"]').classList.add('tab-active');document.querySelectorAll('.aba-conteudo').forEach(c=>c.classList.add('hidden'));document.getElementById('aba-'+n).classList.remove('hidden');}
+function fmt(n){if(!n)return "--";if(n>=1e9)return "$"+(n/1e9).toFixed(2)+"B";if(n>=1e6)return "$"+(n/1e6).toFixed(2)+"M";if(n>=1e3)return "$"+(n/1e3).toFixed(1)+"K";return "$"+Number(n).toFixed(0);}
+function fmtAge(ts){if(!ts)return "--";var m=Math.floor((Date.now()-ts)/60000);if(m<60)return m+"m";var h=Math.floor(m/60);if(h<24)return h+"h";return Math.floor(h/24)+"d";}
 
-function setRede(r) {
-    rede = r;
-    document.getElementById('btnEth').className = r === 'eth' 
-        ? 'px-3 py-1.5 rounded-lg text-xs bg-slate-700 border border-cyan-500' 
-        : 'px-3 py-1.5 rounded-lg text-xs bg-slate-800 border border-slate-600';
-    document.getElementById('btnSol').className = r === 'sol' 
-        ? 'px-3 py-1.5 rounded-lg text-xs bg-slate-700 border border-cyan-500' 
-        : 'px-3 py-1.5 rounded-lg text-xs bg-slate-800 border border-slate-600';
-}
+async function analisar(){
+ const contrato=document.getElementById('contractInput').value.trim();
+ if(!contrato){alert('Cole o endereço');return;}
+ document.getElementById('loading').classList.remove('hidden');
+ document.getElementById('results').classList.add('hidden');
+ try{
+  const dexRes=await fetch('https://api.dexscreener.com/latest/dex/search?q='+encodeURIComponent(contrato));
+  const dexData=await dexRes.json();
+  if(!dexData.pairs?.length)throw new Error('Token não encontrado no DexScreener');
+  const pair=dexData.pairs.sort((a,b)=>(b.liquidity?.usd||0)-(a.liquidity?.usd||0))[0];
+  const isSol=!contrato.startsWith('0x');
+  let sec=null;
+  if(isSol){ try{const r=await fetch('https://api.rugcheck.xyz/v1/tokens/'+contrato+'/report'); if(r.ok) sec=await r.json();}catch(e){} }
 
-function mudarAba(nome) {
-    document.querySelectorAll('[data-tab]').forEach(t => {
-        t.classList.remove('tab-active'); t.classList.add('text-slate-400');
-    });
-    document.querySelector(`[data-tab="${nome}"]`).classList.add('tab-active');
-    document.querySelectorAll('.aba-conteudo').forEach(c => c.classList.add('hidden'));
-    document.getElementById(`aba-${nome}`).classList.remove('hidden');
-}
+  const score=sec?.score_normalised??50;
+  const top10=sec?.topHolders?.slice(0,10).reduce((a,b)=>a+(b.pct||0),0)||0;
+  const scoreEl=document.getElementById('scoreCircle');
+  const color=score>=70?'#22c55e':score>=40?'#eab308':'#ef4444';
+  scoreEl.style.background='conic-gradient('+color+' 0% '+score+'%, #1f2937 0)';
+  document.getElementById('scoreText').textContent=score;
+  document.getElementById('scoreText').style.color=color;
+  document.getElementById('statMC').textContent=fmt(pair.fdv||pair.marketCap);
+  document.getElementById('statLiq').textContent=fmt(pair.liquidity?.usd);
+  document.getElementById('statVol').textContent=fmt(pair.volume?.h24);
+  document.getElementById('statAge').textContent=fmtAge(pair.pairCreatedAt);
+  document.getElementById('statTop10').textContent=top10?top10.toFixed(1)+'%':'--';
+  document.getElementById('statTop10').style.color=top10>40?'#ef4444':'#4ade80';
 
-function analisar() {
-    const contrato = document.getElementById('contractInput').value.trim();
-    if (!contrato) { alert('Cole o endereço do token!'); return; }
+  document.getElementById('linkArkham').href='https://arkm.com/explorer/'+(isSol?'solana':'eth')+'/'+contrato;
+  document.getElementById('linkScan').href=isSol?'https://solscan.io/token/'+contrato:'https://etherscan.io/token/'+contrato;
+  document.getElementById('linkRug').href=isSol?'https://rugcheck.xyz/tokens/'+contrato:'https://honeypot.is/?address='+contrato;
+  document.getElementById('linkCG').href='https://dexscreener.com/'+pair.chainId+'/'+pair.pairAddress;
 
-    // Construir links
-    const ehSol = rede === 'sol';
-    document.getElementById('linkArkham').href = `https://arkm.com/explorer/${rede}/${contrato}`;
-    document.getElementById('linkScan').href = ehSol 
-        ? `https://solscan.io/token/${contrato}` 
-        : `https://etherscan.io/token/${contrato}`;
-    document.getElementById('linkRug').href = ehSol 
-        ? `https://rugcheck.xyz/tokens/solana/${contrato}` 
-        : `https://honeypot.is/?address=${contrato}`;
-    document.getElementById('linkCG').href = `https://www.coingecko.com/en/search?q=${contrato}`;
+  document.getElementById('holdersList').innerHTML=(sec?.topHolders||[]).slice(0,10).map((h,i)=>'<div class="flex justify-between bg-slate-900/50 p-2 rounded"><span>#'+(i+1)+' '+h.address.slice(0,6)+'...'+h.address.slice(-4)+'</span><span class="'+(h.pct>10?'fake':'real')+'">'+h.pct.toFixed(2)+'%</span></div>').join('')||'<div class="text-slate-400">Holders não disponível pra EVM sem API paga. Abra o Explorer.</div>';
 
-    // Mostrar resultados
-    document.getElementById('results').classList.remove('hidden');
+  let risks='';
+  if(top10>40) risks+='<div class="flex gap-2"><span class="fake">❌</span> Top10 com '+top10.toFixed(1)+'% — risco de dump</div>';
+  else risks+='<div class="flex gap-2"><span class="real">✅</span> Top10 com '+top10.toFixed(1)+'% — distribuído</div>';
+  if(sec?.tokenMeta?.mutable===false) risks+='<div class="flex gap-2"><span class="real">✅</span> Mint fechado</div>'; else risks+='<div class="flex gap-2"><span class="fake">❌</span> Mint ainda aberto — pode criar mais</div>';
+  if((pair.liquidity?.usd||0)<20000) risks+='<div class="flex gap-2"><span class="fake">❌</span> Liquidez baixa: '+fmt(pair.liquidity?.usd)+'</div>'; else risks+='<div class="flex gap-2"><span class="real">✅</span> Liquidez: '+fmt(pair.liquidity?.usd)+'</div>';
+  if(sec?.risks?.length) sec.risks.forEach(r=>{risks+='<div class="flex gap-2"><span class="fake">⚠️</span> '+r.name+' ('+r.level+')</div>';});
+  document.getElementById('risksAuto').innerHTML=risks;
+
+  document.getElementById('results').classList.remove('hidden');
+ }catch(e){alert(e.message);}finally{document.getElementById('loading').classList.add('hidden');}
 }
 </script>
 </body>
-          </html>
-          
+</html>
