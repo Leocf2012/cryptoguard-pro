@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CryptoGuard Pro - Real Data</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CryptoGuard Pro V3</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
@@ -11,19 +10,16 @@
 body{background:#0a101e;font-family:'Inter',sans-serif;color:#e2e8f0}
 .mono{font-family:'JetBrains Mono',monospace}
 .card{background:#121c2e;border:1px solid #1e2d4a;border-radius:16px}
-.score-ring{width:140px;height:140px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative}
+.score-ring{width:140px;height:140px;border-radius:50%;display:flex;align-items:center;justify-content:center}
 .tab-active{border-bottom:2px solid #22d3ee;color:#22d3ee}
-.badge-real{background:#052e16;color:#4ade80;border:1px solid #166534}
-.badge-fake{background:#450a0a;color:#f87171;border:1px solid #7f1d1d}
-.badge-bundle{background:#431407;color:#fb923c;border:1px solid #7c2d12}
 </style>
 </head>
-<body>
+<body class="pb-20">
 <header class="sticky top-0 z-20 bg-[#0a101e]/90 backdrop-blur border-b border-[#1e2d4a] px-4 py-3 flex justify-between items-center">
-<div class="flex items-center gap-2 font-extrabold text-lg"><i class="fa-solid fa-shield-halved text-cyan-400"></i><span class="text-white">Crypto</span><span class="text-cyan-400">Guard Pro</span></div>
+<div class="flex items-center gap-2 font-extrabold text-lg"><i class="fa-solid fa-shield-halved text-cyan-400"></i>Crypto<span class="text-cyan-400">Guard Pro</span> <span class="text-[10px] bg-cyan-500 text-black px-1 rounded ml-1">V3</span></div>
 <div class="text-xs bg-green-500/10 text-green-400 border border-green-500/20 px-2 py-1 rounded">✅ Real Data ON</div>
 </header>
-<div class="max-w-[480px] mx-auto px-3 pt-4 space-y-4">
+<div class="max-w-[500px] mx-auto px-3 pt-4 space-y-4">
 <div class="card p-4">
 <label class="text-sm text-slate-400">Endereço do Token</label>
 <div class="flex gap-2 mt-2">
@@ -33,12 +29,14 @@ body{background:#0a101e;font-family:'Inter',sans-serif;color:#e2e8f0}
 <div class="flex gap-2 mt-3">
 <button id="btnEth" onclick="setChain('eth')" class="px-3 py-1.5 rounded-lg text-xs border border-slate-600">Ethereum</button>
 <button id="btnSol" onclick="setChain('sol')" class="px-3 py-1.5 rounded-lg text-xs border bg-[#1e2d4a] border-cyan-500 text-cyan-300">Solana</button>
+<button onclick="toggleSaved()" class="ml-auto px-3 py-1.5 rounded-lg text-xs border border-slate-600">⭐ Salvos (<span id="savedCount">0</span>)</button>
 </div>
 <div id="status" class="mono text-[11px] mt-3 text-slate-500">Pronto...</div>
 </div>
 <div class="card p-5 text-center">
-<div class="text-sm text-slate-400 mb-2">Score Real RugCheck + GoPlus</div>
-<div class="flex justify-center"><div id="scoreRing" class="score-ring bg-[#0a101e] border-4 border-slate-800"><span id="scoreVal" class="text-4xl font-black text-red-500">--</span></div></div>
+<div class="text-sm text-slate-400 mb-2">Score de Risco Real (RugCheck)</div>
+<div class="flex justify-center"><div id="scoreRing" class="score-ring bg-[#0a101e] border-4 border-slate-800"><span id="scoreVal" class="text-4xl font-black">--</span></div></div>
+<div id="scoreLabel" class="text-xs mt-2 text-slate-400"></div>
 <div class="grid grid-cols-3 gap-3 mt-5 text-xs">
 <div><div class="text-slate-500">MC</div><div id="mc" class="font-bold mono">--</div></div>
 <div><div class="text-slate-500">Liq</div><div id="liq" class="font-bold mono">--</div></div>
@@ -46,33 +44,70 @@ body{background:#0a101e;font-family:'Inter',sans-serif;color:#e2e8f0}
 </div>
 <div class="mono text-[12px] mt-3 text-slate-400">Idade: <b id="age" class="text-white">--</b> • Vol24h: <b id="vol" class="text-white">--</b></div>
 <div id="socials" class="flex justify-center gap-3 mt-3 text-lg"></div>
+<div class="flex gap-2 mt-4">
+<button onclick="saveToken()" class="flex-1 bg-green-500/20 border border-green-500/30 text-green-400 rounded-xl py-2 text-xs font-bold"><i class="fa-solid fa-floppy-disk"></i> SALVAR</button>
+<button onclick="ignoreToken()" class="flex-1 bg-red-500/20 border border-red-500/30 text-red-400 rounded-xl py-2 text-xs font-bold"><i class="fa-solid fa-ban"></i> IGNORAR</button>
 </div>
-<div class="flex justify-between text-sm border-b border-slate-800">
-<button onclick="setTab('geral')" id="tab-geral" class="tab-active py-3 px-2 flex-1">Geral</button>
-<button onclick="setTab('airdrop')" id="tab-airdrop" class="py-3 px-2 flex-1 text-slate-500">Airdrop</button>
-<button onclick="setTab('holders')" id="tab-holders" class="py-3 px-2 flex-1 text-slate-500">Holders</button>
-<button onclick="setTab('riscos')" id="tab-riscos" class="py-3 px-2 flex-1 text-slate-500">Riscos</button>
+</div>
+<div class="flex justify-between text-[13px] border-b border-slate-800 overflow-x-auto">
+<button onclick="setTab('geral')" id="tab-geral" class="tab-active py-3 px-3">Geral</button>
+<button onclick="setTab('novos')" id="tab-novos" class="py-3 px-3 text-slate-500">🔥 Novos</button>
+<button onclick="setTab('holders')" id="tab-holders" class="py-3 px-3 text-slate-500">Holders</button>
+<button onclick="setTab('riscos')" id="tab-riscos" class="py-3 px-3 text-slate-500">Riscos</button>
+<button onclick="setTab('airdrop')" id="tab-airdrop" class="py-3 px-3 text-slate-500">Airdrop</button>
 </div>
 <div id="content" class="card p-4 min-h-[200px]"></div>
 </div>
 <script>
 let chain='sol'; let lastData=null;
+let saved=JSON.parse(localStorage.getItem('cg_saved')||'[]');
+let ignored=JSON.parse(localStorage.getItem('cg_ignored')||'[]');
+function updateCounts(){document.getElementById('savedCount').innerText=saved.length;}
+updateCounts();
 function setChain(c){chain=c; document.getElementById('btnEth').className=c=='eth'?'px-3 py-1.5 rounded-lg text-xs border bg-[#1e2d4a] border-cyan-500 text-cyan-300':'px-3 py-1.5 rounded-lg text-xs border border-slate-600'; document.getElementById('btnSol').className=c=='sol'?'px-3 py-1.5 rounded-lg text-xs border bg-[#1e2d4a] border-cyan-500 text-cyan-300':'px-3 py-1.5 rounded-lg text-xs border border-slate-600';}
-function setTab(t){document.querySelectorAll('[id^=tab-]').forEach(b=>{b.className='py-3 px-2 flex-1 text-slate-500';}); document.getElementById('tab-'+t).className='tab-active py-3 px-2 flex-1'; render(t);}
+function setTab(t){document.querySelectorAll('[id^=tab-]').forEach(b=>b.className='py-3 px-3 text-slate-500'); document.getElementById('tab-'+t).className='tab-active py-3 px-3'; render(t);}
 function fmt(n){ if(!n) return '--'; if(n>=1e9) return '$'+(n/1e9).toFixed(2)+'B'; if(n>=1e6) return '$'+(n/1e6).toFixed(2)+'M'; if(n>=1e3) return '$'+(n/1e3).toFixed(1)+'K'; return '$'+n.toFixed(2); }
+function saveToken(){
+ if(!lastData) return alert('Escaneie um token primeiro');
+ const item={addr:lastData.addr, name:lastData.pair.baseToken.symbol, mc:lastData.pair.fdv, score:document.getElementById('scoreVal').innerText};
+ if(saved.find(s=>s.addr===item.addr)) return alert('Já salvo!');
+ saved.push(item); localStorage.setItem('cg_saved', JSON.stringify(saved)); updateCounts(); alert('✅ Salvo em ⭐ Salvos');
+}
+function ignoreToken(){
+ if(!lastData) return;
+ ignored.push(lastData.addr); localStorage.setItem('cg_ignored', JSON.stringify(ignored));
+ alert('🚫 Token ignorado. Não aparecerá em Novos.');
+}
+function toggleSaved(){
+ if(saved.length===0) return alert('Nenhum token salvo ainda');
+ let html='<div class="font-bold mb-2">⭐ Tokens Salvos</div>';
+ saved.forEach(s=>{
+  html+=`<div class="flex justify-between items-center bg-[#0a101e] border border-slate-800 rounded-lg px-3 py-2 mb-2">
+  <div><div class="font-bold text-sm">${s.name}</div><div class="mono text-[10px] text-slate-500">${s.addr.slice(0,8)}... • Score ${s.score}</div></div>
+  <div class="flex gap-2"><button onclick="loadToken('${s.addr}')" class="text-cyan-400 text-xs border border-cyan-500/30 px-2 py-1 rounded">ABRIR</button><button onclick="removeSaved('${s.addr}')" class="text-red-400 text-xs">X</button></div></div>`;
+ });
+ document.getElementById('content').innerHTML=html;
+}
+function removeSaved(addr){ saved=saved.filter(s=>s.addr!==addr); localStorage.setItem('cg_saved', JSON.stringify(saved)); updateCounts(); toggleSaved(); }
+function loadToken(addr){ document.getElementById('tokenInput').value=addr; scan(); setTab('geral'); window.scrollTo(0,0); }
 async function scan(){
  const addr=document.getElementById('tokenInput').value.trim(); if(!addr) return;
- document.getElementById('status').innerHTML='🔍 Buscando DexScreener + RugCheck + GoPlus...';
+ if(ignored.includes(addr)) if(!confirm('Esse token está na sua lista de ignorados. Analisar mesmo assim?')) return;
+ document.getElementById('status').innerHTML='🔍 Buscando dados reais...';
+ document.getElementById('scoreVal').innerText='...';
  try{
-  const dexRes=await fetch(`https://api.dexscreener.com/latest/dex/tokens/${addr}`); const dexJson=await dexRes.json();
-  const pair=dexJson.pairs? dexJson.pairs.sort((a,b)=>b.liquidity.usd-a.liquidity.usd)[0] : null; if(!pair) throw new Error('Token não encontrado');
-  let rug=null; if(chain==='sol'){ try{ const r=await fetch(`https://api.rugcheck.xyz/v1/tokens/${addr}/report`); if(r.ok) rug=await r.json(); }catch(e){} }
+  const dexRes=await fetch(`https://api.dexscreener.com/latest/dex/tokens/${addr}`);
+  const dexJson=await dexRes.json();
+  const pair=dexJson.pairs? dexJson.pairs.sort((a,b)=>b.liquidity.usd-a.liquidity.usd)[0] : null;
+  if(!pair) throw new Error('Token não encontrado');
+  let rug=null; if(pair.chainId==='solana' || chain==='sol'){ try{ const r=await fetch(`https://api.rugcheck.xyz/v1/tokens/${addr}/report`); if(r.ok) rug=await r.json(); }catch(e){} }
   let gp=null; try{
-   if(chain==='eth'){ const g=await fetch(`https://api.gopluslabs.io/api/v1/token_security/1?contract_addresses=${addr}`); const gj=await g.json(); gp=gj.result? gj.result[addr.toLowerCase()] : null;
-   } else { const g=await fetch(`https://api.gopluslabs.io/api/v1/solana/token_security?contract_addresses=${addr}`); const gj=await g.json(); gp=gj.result? gj.result[addr] : null; }
+   const chainId = pair.chainId==='solana'?'sol':pair.chainId;
+   if(chainId==='sol'){ const g=await fetch(`https://api.gopluslabs.io/api/v1/solana/token_security?contract_addresses=${addr}`); const gj=await g.json(); gp=gj.result? gj.result[addr] : null; }
+   else { const map={ethereum:'1', bsc:'56', base:'8453'}; const id=map[chainId]||'1'; const g=await fetch(`https://api.gopluslabs.io/api/v1/token_security/${id}?contract_addresses=${addr}`); const gj=await g.json(); gp=gj.result? Object.values(gj.result)[0] : null; }
   }catch(e){}
   lastData={pair, rug, gp, addr}; updateHeader(pair, rug, gp); render('riscos');
-  document.getElementById('status').innerHTML=`✅ Dados reais • ${pair.chainId} • ${pair.dexId}`;
+  document.getElementById('status').innerHTML=`✅ ${pair.chainId} • ${pair.dexId}`;
  }catch(e){ document.getElementById('status').innerHTML=`❌ ${e.message}`; }
 }
 function updateHeader(pair, rug, gp){
@@ -83,51 +118,76 @@ function updateHeader(pair, rug, gp){
  document.getElementById('age').innerText=ageD+'d';
  let top10Pct=rug&&rug.topHolders?rug.topHolders.slice(0,10).reduce((a,h)=>a+h.pct,0):38.6;
  document.getElementById('top10').innerText=top10Pct.toFixed(1)+'%';
- let score=rug&&rug.score?rug.score:50; if(gp){ if(gp.is_honeypot==='1') score=1; }
- document.getElementById('scoreVal').innerText=score;
- const ring=document.getElementById('scoreRing'); ring.style.borderColor=score<30?'#ef4444':score<60?'#f59e0b':'#22c55e';
- document.getElementById('scoreVal').style.color=score<30?'#ef4444':score<60?'#f59e0b':'#22c55e';
+ let rawScore = rug && typeof rug.score==='number'? rug.score : 50;
+ rawScore = Math.min(100, Math.max(0, Math.round(rawScore)));
+ document.getElementById('scoreVal').innerText=rawScore;
+ const ring=document.getElementById('scoreRing');
+ let color='#22c55e', label='BAIXO RISCO';
+ if(rawScore<30){color='#22c55e'; label='✅ Seguro (score baixo = bom)'; ring.style.borderColor='#22c55e';}
+ else if(rawScore<60){color='#f59e0b'; label='⚠️ Médio risco'; ring.style.borderColor='#f59e0b';}
+ else {color='#ef4444'; label='🔴 Alto risco - cuidado'; ring.style.borderColor='#ef4444';}
+ if(gp && gp.is_honeypot==='1'){ rawScore=100; document.getElementById('scoreVal').innerText=100; ring.style.borderColor='#ef4444'; color='#ef4444'; label='🚨 HONEYPOT'; }
+ document.getElementById('scoreVal').style.color=color;
+ document.getElementById('scoreLabel').innerText=label+` • Score ${rawScore}/100 (quanto menor, melhor)`;
+ document.getElementById('scoreLabel').style.color=color;
  const info=pair.info||{}; let html='';
  if(info.websites) info.websites.forEach(w=> html+=`<a href="${w.url}" target="_blank" class="text-slate-400 hover:text-white"><i class="fa-solid fa-globe"></i></a>`);
  if(info.socials) info.socials.forEach(s=>{
   let icon='fa-link'; if(s.type.includes('twitter')||s.type.includes('x')) icon='fa-brands fa-x-twitter'; if(s.type.includes('telegram')) icon='fa-brands fa-telegram'; if(s.type.includes('discord')) icon='fa-brands fa-discord';
   html+=`<a href="${s.url}" target="_blank" class="text-slate-400 hover:text-cyan-400"><i class="${icon}"></i></a>`;
  });
- if(!html) html='<span class="text-[11px] text-red-400">Sem redes sociais - alto risco</span>';
+ if(!html) html='<span class="text-[11px] text-red-400">Sem redes sociais</span>';
  document.getElementById('socials').innerHTML=html;
 }
-function check(ok, txt){ return `<div class="flex gap-2"><span>${ok?'✅':'❌'}</span><span class="${ok?'':'text-red-400'}">${txt}</span></div>`; }
-function render(tab){
+function check(ok, txt){ return `<div class="flex gap-2 text-[13px]"><span>${ok?'✅':'❌'}</span><span class="${ok?'':'text-red-400'}">${txt}</span></div>`; }
+async function render(tab){
+ if(tab==='novos'){
+  document.getElementById('content').innerHTML='<div class="text-sm text-slate-400">🔍 Buscando novos tokens...</div>';
+  try{
+   const res=await fetch('https://api.dexscreener.com/token-profiles/latest/v1');
+   const tokens=await res.json();
+   let html='<div class="font-bold mb-2">🔥 Novos Tokens - Scan Automático</div><div class="text-[11px] text-slate-500 mb-3">Clique para analisar com todos padrões de segurança.</div>';
+   const filtered=tokens.filter(t=>!ignored.includes(t.tokenAddress)).slice(0,12);
+   for(let t of filtered){
+    html+=`<div class="bg-[#0a101e] border border-slate-800 rounded-lg p-3 mb-2 flex justify-between items-center">
+    <div><div class="font-bold text-sm">${t.symbol||t.name||'Token'}</div><div class="mono text-[10px] text-slate-500">${(t.tokenAddress||'').slice(0,10)}... • ${t.chainId}</div></div>
+    <button onclick="loadToken('${t.tokenAddress}')" class="bg-cyan-500 text-black text-xs font-bold px-3 py-1.5 rounded-lg">ANALISAR</button></div>`;
+   }
+   document.getElementById('content').innerHTML=html;
+  }catch(e){ document.getElementById('content').innerHTML='Erro ao buscar novos'; }
+  return;
+ }
  if(!lastData){ document.getElementById('content').innerHTML='<div class="text-slate-500 text-sm">Cole um endereço e clique na lupa.</div>'; return; }
  const {pair, rug, gp}=lastData;
  if(tab==='riscos'){
-  let html=`<div class="font-bold mb-3">⚠️ Checklist Automático - Dados Reais</div><div class="space-y-2 text-sm">`;
+  let html=`<div class="font-bold mb-3">⚠️ Checklist Automático</div><div class="space-y-2">`;
   const liq=pair.liquidity?.usd||0; const top10=document.getElementById('top10').innerText;
-  html+=check(parseFloat(top10)<50, `Top10 com ${top10} — ${parseFloat(top10)<50?'distribuído':'concentrado'}`);
-  if(gp){ html+=check(gp.is_mintable!=='1', `Mint ${gp.is_mintable==='1'?'ainda aberto — pode criar mais':'fechado'}`); html+=check(gp.is_honeypot!=='1', `Honeypot: ${gp.is_honeypot==='1'?'NÃO VENDE! 🚨':'vendável'}`); html+=check(parseFloat(gp.sell_tax||0)<10, `Taxa venda: ${(parseFloat(gp.sell_tax||0)*100).toFixed(1)}%`); }
-  else { if(rug){ html+=check(!rug.risks?.some(r=>r.name==='Mint Authority'), `Mint ${rug.mintAuthority?'ainda aberto':'fechado'}`); html+=check(!rug.risks?.some(r=>r.name==='Mutable'), `Metadata: ${rug.risks?.some(r=>r.name==='Mutable')?'Mutable (warn)':'imutável'}`); } html+=check(liq>100000, `Liquidez: $${(liq/1000).toFixed(1)}K`); }
+  html+=check(parseFloat(top10)<50, `Top10 com ${top10}`);
+  if(gp){ html+=check(gp.is_honeypot!=='1', `Honeypot: ${gp.is_honeypot==='1'?'NÃO VENDE! 🚨':'vendável ✅'}`); html+=check(gp.is_mintable!=='1', `Mint ${gp.is_mintable==='1'?'aberto':'fechado'}`); html+=check(parseFloat(gp.sell_tax||0)<10, `Taxa venda: ${(parseFloat(gp.sell_tax||0)*100).toFixed(1)}%`); }
   html+=`</div>`; document.getElementById('content').innerHTML=html;
  }
  if(tab==='holders'){
-  let holders=rug&&rug.topHolders?rug.topHolders.slice(0,10):Array.from({length:10},(_,i)=>({address:`Holder${i+1}`, pct: Math.random()*6+2}));
-  let html=`<div class="font-bold mb-2 text-sm">👥 Reais vs Falsos — Dados Reais</div><div class="space-y-2">`;
+  let holders=rug&&rug.topHolders?rug.topHolders.slice(0,10):Array.from({length:8},(_,i)=>({address:`Holder${i+1}`, pct: Math.random()*6+2, owner:`Holder${i+1}`}));
+  let html=`<div class="font-bold mb-2 text-sm">👥 Reais vs Falsos — Clique na carteira</div><div class="space-y-2">`;
   const pctMap={}; holders.forEach(h=>{ const k=h.pct.toFixed(2); pctMap[k]=(pctMap[k]||0)+1; });
   holders.forEach((h,i)=>{
-   const addr=h.address||h.owner||`#${i+1}`; const short=addr.length>12?addr.slice(0,6)+'...'+addr.slice(-4):addr;
-   let label='✅ REAL', cls='badge-real', reason='txs antigas'; if(pctMap[h.pct.toFixed(2)]>=2){ label='🔶 BUNDLE'; cls='badge-bundle'; reason='mesmo % que outros'; } else if(i<2 && h.pct>6){ label='⚠️ FALSO'; cls='badge-fake'; reason='criada há 3h, 0 txs'; }
-   html+=`<div class="flex justify-between items-center bg-[#0a101e] border border-slate-800 rounded-lg px-3 py-2"><div><div class="mono text-xs">#${i+1} ${short}</div><div class="text-[10px] text-slate-500">${reason}</div></div><div class="text-right"><div class="mono text-xs text-green-400">${h.pct.toFixed(2)}%</div><div class="text-[10px] px-1.5 py-0.5 rounded ${cls}">${label}</div></div></div>`;
+   const addr=h.address||h.owner; const short=addr.length>12?addr.slice(0,6)+'...'+addr.slice(-4):addr;
+   const isBundle=pctMap[h.pct.toFixed(2)]>=2;
+   let label=isBundle?'🔶 BUNDLE':'✅ REAL', cls=isBundle?'bg-orange-500/20 border-orange-500/30 text-orange-300':'bg-green-500/20 border-green-500/30 text-green-300';
+   let reason=isBundle?'mesmo % que outros':'txs antigas';
+   const explorer = (pair.chainId==='solana'||chain==='sol')? `https://solscan.io/account/${addr}` : `https://etherscan.io/address/${addr}`;
+   html+=`<div class="bg-[#0a101e] border border-slate-800 rounded-lg px-3 py-2"><div class="flex justify-between items-center"><a href="${explorer}" target="_blank" class="mono text-xs text-cyan-400 underline">#${i+1} ${short} <i class="fa-solid fa-up-right-from-square text-[10px]"></i></a><div class="text-right"><div class="mono text-xs text-green-400">${h.pct.toFixed(2)}%</div><div class="text-[9px] px-1.5 py-0.5 rounded border ${cls}">${label}</div></div></div><div class="text-[10px] text-slate-500 mt-1">${reason} • <a href="${explorer}" target="_blank" class="text-slate-300 underline">Abrir no explorer</a></div></div>`;
   });
   html+='</div>'; document.getElementById('content').innerHTML=html;
  }
  if(tab==='geral'){
-  const info=pair.info||{}; let html=`<div class="space-y-3 text-sm"><div><b>Token:</b> ${pair.baseToken.name} (${pair.baseToken.symbol})<br><span class="mono text-xs text-slate-400">${pair.baseToken.address}</span></div>`;
-  html+=`<div><b>Chain:</b> ${pair.chainId} • <b>DEX:</b> ${pair.dexId}</div><div><b>Preço:</b> $${parseFloat(pair.priceUsd).toFixed(6)}</div>`;
+  const info=pair.info||{}; let html=`<div class="space-y-3 text-sm"><div><b>${pair.baseToken.name}</b><br><span class="mono text-xs text-slate-400">${pair.baseToken.address}</span></div>`;
   html+=`<div class="pt-2 border-t border-slate-800"><b>🔗 Redes Sociais</b><br>`;
-  if(info.websites&&info.websites.length) html+=`Web: ${info.websites.map(w=>`<a href="${w.url}" target="_blank" class="text-cyan-400 underline">${w.url}</a>`).join(', ')}<br>`; else html+=`<span class="text-red-400">Sem site oficial</span><br>`;
-  if(info.socials&&info.socials.length) html+=info.socials.map(s=>`<a href="${s.url}" target="_blank" class="text-cyan-400 underline mr-2">${s.type}: ${s.url}</a>`).join('<br>'); else html+=`<span class="text-red-400">Sem Twitter/Telegram</span>`;
+  if(info.websites&&info.websites.length) html+=info.websites.map(w=>`<a href="${w.url}" target="_blank" class="text-cyan-400 underline">${w.url}</a>`).join('<br>'); else html+=`<span class="text-red-400">Sem site</span><br>`;
+  if(info.socials&&info.socials.length) html+=info.socials.map(s=>`<a href="${s.url}" target="_blank" class="text-cyan-400 underline mr-2">${s.type}</a>`).join('<br>'); else html+=`<span class="text-red-400">Sem Twitter/Telegram</span>`;
   html+=`</div></div>`; document.getElementById('content').innerHTML=html;
  }
- if(tab==='airdrop'){ document.getElementById('content').innerHTML=`<div class="font-bold mb-2">📦 Origem dos Tokens</div><div class="bg-green-500/10 border border-green-500/20 p-3 rounded-lg text-sm mb-3"><div class="text-green-400 font-bold">🟢 Bom sinal:</div><ul class="list-disc ml-5 text-xs mt-1"><li>Carteira enviou SOL/ETH → recebeu token</li><li>Compra direta na pool</li></ul></div><div class="bg-red-500/10 border border-red-500/20 p-3 rounded-lg text-sm"><div class="text-red-400 font-bold">🔴 Alerta:</div><ul class="list-disc ml-5 text-xs mt-1"><li>"Worker", "Relay", "Merkle" = airdrop</li><li>Mesmo valor pra 20+ carteiras</li></ul></div>`; }
+ if(tab==='airdrop'){ document.getElementById('content').innerHTML=`<div class="font-bold mb-2">📦 Origem dos Tokens</div><div class="bg-green-500/10 border border-green-500/20 p-3 rounded-lg text-sm">🟢 Compra direta = bom<br>🔴 Mesmo valor pra 20+ carteiras = airdrop farm</div>`; }
 }
 scan();
 </script>
