@@ -1,3 +1,5 @@
+const HELIUS_KEY = process.env.HELIUS_KEY;
+const ETHERSCAN_KEY = process.env.ETHERSCAN_KEY;
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
